@@ -1,0 +1,26 @@
+{
+  "name": "dermalux-vto",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "DermaLux Studio: Real-Time 14-Metric Skin AI Diagnostic, ITA° Tone Calibration, Active-Ingredient Conflict Solver & Virtual Regimen Try-On powered by Perfect Corp YouCam AI",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1 --port 5187 --strictPort",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview --host 127.0.0.1 --port 5187 --strictPort",
+    "test": "node --experimental-strip-types src/test/dermalux-verification.test.ts",
+    "check": "tsc --noEmit && npm test"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.7.5",
+    "@types/react": "^18.3.11",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.2",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.9"
+  }
+}
