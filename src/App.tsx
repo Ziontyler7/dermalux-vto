@@ -20,12 +20,13 @@ import {
   type VtoHorizon,
 } from './lib/vto/vto-trajectory-exporter.ts';
 import {
+  buildYouCamS2sV2TaskSpec,
   createRegimenAttestation,
   verifyRegimenAttestationIntegrity,
   type RegimenAttestation,
 } from './lib/youcam/youcam-vto-supervisor.ts';
 
-type ExportTabFormat = 'MARKDOWN' | 'JSON' | 'ICS';
+type ExportTabFormat = 'MARKDOWN' | 'JSON' | 'ICS' | 'YOUCAM_S2S_V2';
 
 const METRIC_LABELS: Record<YouCamMetricKey, string> = {
   moisture: 'Stratum Corneum Moisture',
@@ -118,6 +119,9 @@ export function App() {
 
   const exportContent = useMemo(() => {
     const seal = attestationValid && attestation ? attestation.signature : undefined;
+    if (exportTab === 'YOUCAM_S2S_V2') {
+      return JSON.stringify(buildYouCamS2sV2TaskSpec(diagnostic), null, 2);
+    }
     if (exportTab === 'JSON') {
       return exportYouCamVtoJson(diagnostic, regimen, vtoSimulation, seal);
     }
@@ -622,7 +626,7 @@ export function App() {
             </div>
 
             <div className="export-tabs">
-              {(['MARKDOWN', 'JSON', 'ICS'] as const).map((tab) => (
+              {(['MARKDOWN', 'JSON', 'ICS', 'YOUCAM_S2S_V2'] as const).map((tab) => (
                 <button
                   key={tab}
                   type="button"

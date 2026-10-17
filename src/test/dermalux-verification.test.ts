@@ -224,6 +224,16 @@ test('Gate 4: 4-Stage YouCam VTO Supervisor, 4.5s Circuit Breaker & FNV-1a-32 At
   assert.equal(normalRun.circuitBreakerTripped, false);
   assert.equal(normalRun.stageTraces.length, 4);
   assert.equal(normalRun.scrubbedIntake.redactionCount, 1);
+  assert.equal(normalRun.youcamS2sTaskSpec.apiVersion, 's2s/v2.0');
+  assert.equal(
+    normalRun.youcamS2sTaskSpec.taskCreateEndpoint,
+    'POST https://yce-api-01.perfectcorp.com/s2s/v2.0/task/skin-analysis'
+  );
+  assert.equal(normalRun.youcamS2sTaskSpec.requestPayload.dst_actions.length, 14);
+  assert.equal(
+    normalRun.youcamS2sTaskSpec.requestPayload.fitzpatrick_ita_calibration.enabled,
+    true
+  );
 
   const fallbackRun = await runYouCamVtoSupervisorPipeline({
     profileId: 'DLX-FITZ-VI-BARRIER',

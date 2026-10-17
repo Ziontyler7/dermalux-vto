@@ -42,6 +42,51 @@ export interface YouCamSupervisorRequest {
   simulateTimeout?: boolean;
 }
 
+export interface YouCamS2sV2TaskSpec {
+  apiVersion: 's2s/v2.0';
+  fileInitEndpoint: 'POST https://yce-api-01.perfectcorp.com/s2s/v2.0/file/skin-analysis';
+  taskCreateEndpoint: 'POST https://yce-api-01.perfectcorp.com/s2s/v2.0/task/skin-analysis';
+  taskPollEndpoint: string;
+  taskId: string;
+  requestPayload: {
+    src_file_id: string;
+    dst_actions: readonly [
+      'hd_wrinkle',
+      'hd_pore',
+      'hd_texture',
+      'hd_acne',
+      'hd_oiliness',
+      'hd_radiance',
+      'hd_eye_bag',
+      'hd_age_spot',
+      'hd_dark_circle_v2',
+      'hd_droopy_upper_eyelid',
+      'hd_droopy_lower_eyelid',
+      'hd_firmness',
+      'hd_moisture',
+      'hd_redness',
+    ];
+    fitzpatrick_ita_calibration: {
+      enabled: true;
+      cie_lab: { L: number; a: number; b: number };
+      ita_degrees: number;
+      fitzpatrick_band: string;
+      melanin_fairness_lift_pts: number;
+      erythema_compensation_pts: number;
+    };
+  };
+  responseEnvelope: {
+    status: 200;
+    result: {
+      task_id: string;
+      task_status: 'success';
+      overall_score: number;
+      skin_age: number;
+      barrier_integrity: string;
+    };
+  };
+}
+
 export interface YouCamSupervisorResult {
   profileId: string;
   decisionMode: YouCamSupervisorDecisionMode;
@@ -51,6 +96,7 @@ export interface YouCamSupervisorResult {
   diagnostic: CalibratedSkinDiagnostic;
   regimen: SolvedAmPmRegimen;
   vtoSimulation: VtoTrajectorySimulation;
+  youcamS2sTaskSpec: YouCamS2sV2TaskSpec;
   stageTraces: YouCamStageTrace[];
 }
 
@@ -149,6 +195,57 @@ export function verifyRegimenAttestationIntegrity(
   );
 }
 
+export function buildYouCamS2sV2TaskSpec(
+  diagnostic: CalibratedSkinDiagnostic
+): YouCamS2sV2TaskSpec {
+  const hashHex = computeFnv1a32Hex(`${diagnostic.profileId}:${diagnostic.itaDegrees}`);
+  const taskId = `ycam-task-${hashHex.toLowerCase()}`;
+  return {
+    apiVersion: 's2s/v2.0',
+    fileInitEndpoint: 'POST https://yce-api-01.perfectcorp.com/s2s/v2.0/file/skin-analysis',
+    taskCreateEndpoint: 'POST https://yce-api-01.perfectcorp.com/s2s/v2.0/task/skin-analysis',
+    taskPollEndpoint: `GET https://yce-api-01.perfectcorp.com/s2s/v2.0/task/skin-analysis?task_id=${taskId}`,
+    taskId,
+    requestPayload: {
+      src_file_id: `file-sanitized-${diagnostic.profileId.toLowerCase()}`,
+      dst_actions: [
+        'hd_wrinkle',
+        'hd_pore',
+        'hd_texture',
+        'hd_acne',
+        'hd_oiliness',
+        'hd_radiance',
+        'hd_eye_bag',
+        'hd_age_spot',
+        'hd_dark_circle_v2',
+        'hd_droopy_upper_eyelid',
+        'hd_droopy_lower_eyelid',
+        'hd_firmness',
+        'hd_moisture',
+        'hd_redness',
+      ],
+      fitzpatrick_ita_calibration: {
+        enabled: true,
+        cie_lab: diagnostic.cieLab,
+        ita_degrees: diagnostic.itaDegrees,
+        fitzpatrick_band: diagnostic.fitzpatrickBand,
+        melanin_fairness_lift_pts: diagnostic.melaninFairnessBaselineLift,
+        erythema_compensation_pts: diagnostic.erythemaCompensationDelta,
+      },
+    },
+    responseEnvelope: {
+      status: 200,
+      result: {
+        task_id: taskId,
+        task_status: 'success',
+        overall_score: diagnostic.overallSkinHealthScore,
+        skin_age: diagnostic.calibratedMetrics.skinAgeIndex,
+        barrier_integrity: diagnostic.barrierIntegrityStatus,
+      },
+    },
+  };
+}
+
 export async function runYouCamVtoSupervisorPipeline(
   request: YouCamSupervisorRequest
 ): Promise<YouCamSupervisorResult> {
@@ -172,6 +269,7 @@ export async function runYouCamVtoSupervisorPipeline(
     const diagnostic = calibrate14MetricsForIta(profile);
     const regimen = solveConflictSafeRegimen(diagnostic, request.constraints);
     const vtoSimulation = simulateVtoTrajectory(diagnostic, regimen, request.vtoHorizon);
+    const youcamS2sTaskSpec = buildYouCamS2sV2TaskSpec(diagnostic);
 
     const stageStatus = circuitBreakerTripped ? 'FALLBACK_RECOVERED' : 'COMPLETED';
 
@@ -213,6 +311,7 @@ export async function runYouCamVtoSupervisorPipeline(
       diagnostic,
       regimen,
       vtoSimulation,
+      youcamS2sTaskSpec,
       stageTraces,
     };
   } finally {
