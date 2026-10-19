@@ -18,3 +18,5 @@ Standard eCommerce skincare quizzes and naive optical skin scanners suffer from 
 - **Gate 4**: 4-Stage YouCam VTO supervisor with `4500ms` `AbortController` circuit breaker fallback and FNV-1a-32 cryptographic prescription attestation (`DLX-YCAM-...`).
 - **Gate 5**: Port `5187` (`strictPort: true`) isolation and interactive 14-zone SVG facial mesh UI wiring.
 - **Gate 6**: Clean-room repository audit verifying zero external CDN dependencies and zero internal terminology leaks.
+
+- **Perfect Corp YouCam S2S v2.0 REST Contract Inspector (`YOUCAM_S2S_V2`)**: Exposes the complete `POST https://yce-api-01.perfectcorp.com/s2s/v2.0/task/skin-analysis` payload with all 14 HD `dst_actions` modules and CIE $L^*a^*b^*$ $\text{ITA}^\circ$ calibration metadata.

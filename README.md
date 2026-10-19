@@ -38,3 +38,7 @@ npm run build
 # Start development server on http://127.0.0.1:5187
 npm run dev
 ```
+
+## 🔬 Perfect Corp YouCam S2S v2.0 (`/s2s/v2.0/task/skin-analysis`) Inspector (`YOUCAM_S2S_V2`)
+
+- **YouCam Server-to-Server v2.0 REST Workflow (`buildYouCamS2sV2TaskSpec`)**: Generates the exact `POST https://yce-api-01.perfectcorp.com/s2s/v2.0/file/skin-analysis`, `POST /s2s/v2.0/task/skin-analysis` (with all 14 HD `dst_actions` modules: `hd_wrinkle`, `hd_pore`, `hd_texture`, `hd_acne`, `hd_oiliness`, `hd_radiance`, `hd_eye_bag`, `hd_age_spot`, `hd_redness`, `hd_moisture`, `hd_firmness`, `hd_upper_eyelid`, `hd_lower_eyelid`, `skin_type`), and `GET /s2s/v2.0/task/skin-analysis?task_id={task_id}` contract paired with CIE $L^*a^*b^*$ $\text{ITA}^\circ$ fairness calibration.

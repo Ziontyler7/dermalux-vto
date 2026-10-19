@@ -28,3 +28,6 @@ flowchart LR
 
 4. **`src/lib/youcam/youcam-vto-supervisor.ts`**:
    - Enforces a `4500ms` `AbortController` circuit breaker and seals the regimen state with an FNV-1a-32 hash (`DLX-YCAM-<HEX8>`).
+
+4. **`src/lib/youcam/youcam-vto-supervisor.ts` (`buildYouCamS2sV2TaskSpec`)**:
+   - Constructs the Perfect Corp YouCam S2S v2.0 REST workflow (`POST /s2s/v2.0/file/skin-analysis`, `POST /s2s/v2.0/task/skin-analysis` with 14 HD `dst_actions`, and polling `GET /s2s/v2.0/task/skin-analysis`), rendered in the `YOUCAM_S2S_V2` export tab.
