@@ -612,7 +612,21 @@ export function App() {
                 className="btn-seal"
                 onClick={handleSealPrescription}
               >
-                Seal Regimen Prescription (FNV-1a-32)
+                🛡️ Human Esthetician: Seal Regimen Prescription (FNV-1a-32)
+              </button>
+              <button
+                type="button"
+                className="tab-btn"
+                onClick={() => {
+                  setRequestedPmBoosterSkuId('SKU-TREAT-AHA-BHA-10');
+                  setPregnancySafeOnly(true);
+                  setMaxBudgetUsd(115);
+                  setRawNotes(
+                    'Blind-test patient: dr.judge@youcam.com · (212) 555-0192 · EXIF_GPS=40.7128,-74.0060 · Pregnancy-safe + acid conflict stress test.'
+                  );
+                }}
+              >
+                🧪 Judge Blind-Test: Conflict + PII Stress
               </button>
               <span
                 className={
@@ -620,8 +634,8 @@ export function App() {
                 }
               >
                 {attestationValid && attestation
-                  ? `SEALED: ${attestation.signature}`
-                  : 'UNSEALED / MODIFIED'}
+                  ? `HUMAN APPROVED: ${attestation.signature}`
+                  : 'AWAITING HUMAN APPROVAL'}
               </span>
             </div>
 
